@@ -11,10 +11,17 @@ sysctl net.ipv4.conf.eth0.force_igmp_version=2
 # ffmpeg -i vidio.mp4 -f mpegts -vcodec libx264 -acodec aac vidio.ts
 
 for i in $video; do videos+="$i|"; done
+	
+	# VIDEO TS STREAMING
 	ffmpeg -nostdin -re -stream_loop -1 -i "concat:$videos" -deinterlace -vsync 1 -threads 8 -vcodec copy -r 29 -g 60 -sc_threshold 0 -b:v 1300k -bufsize 1216k -maxrate 1280k -preset ultrafast -tune film -acodec aac -filter:a volumedetect -b:a 128k -ac 2 -ar 48000 -f mpegts "udp://239.0.3.10:10000?ttl=4"
+  	
+	# DESCKTOP STREAMING
+  	ffmpeg -re -f x11grab -i :0.0 -vcodec libx264 -acodec aac -f mpegts "udp://235.0.0.1:10000"
+	
+	# WEBCAN SHERING
+	ffmpeg -re -f /dev/video0 -vcodec libx264 -acodec aac -f mpegts "udp://235.0.0.1:10000"
   
-  
-  # EXAMPLES
+  # OTHERS EXAMPLES
   #ffmpeg -re -stream_loop -1 -i "concat:$videos" -vcodec mpeg2video -acodec mp2 -f mpegts "udp://239.0.3.10:10000?ttl=4&pkt_size=1316" > /dev/null
   #ffmpeg -re -stream_loop -1 -i "concat:$videos" -vcodec copy -acodec copy -f mpegts udp://239.0.3.10:10000[ttl=7]
   #ffmpeg -re -i $i -vcodec copy -acodec copy -f mpegts "udp://235.0.0.1:10000" > /dev/null
